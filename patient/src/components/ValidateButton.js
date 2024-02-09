@@ -1,12 +1,13 @@
-const handleValidationAll = async () => {
+import React from 'react';
+import axios from 'axios';
+import { loadBlockchainData } from '../Web3'; // Assuming loadBlockchainData is exported from Web3.js
+
+function ValidateButton({ patients }) {
+  const handleValidationAll = async () => {
     try {
-      // Filter patients with valid === 0
       const patientsToValidate = patients.filter(patient => patient.valid === 0);
-      
-      // Load blockchain data to get contract instance and accounts
       const { valid, accounts } = await loadBlockchainData();
-  
-      // Iterate over filtered patients and add each one to the blockchain
+
       patientsToValidate.forEach(async (patient) => {
         try {
           await valid.methods
@@ -16,20 +17,21 @@ const handleValidationAll = async () => {
           alert(error.message);
         }
       });
-  
-      // Update the validity of all patients in the database
+
       await axios.put(`http://localhost:5000/validate/all`);
-  
+
       alert('All patients validated successfully!');
-      window.location.reload(); // Reload the page
+      window.location.reload();
     } catch (error) {
       console.error('Error while validating all patients:', error);
     }
   };
-  
+
   return (
     <div>
       <button onClick={handleValidationAll}>Valider tous les patients</button>
     </div>
   );
-  
+}
+
+export default ValidateButton;
