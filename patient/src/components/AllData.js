@@ -8,7 +8,7 @@ function AllData() {
     const fetchAllData = async () => {
       try {
         const response = await axios.get('http://localhost:5000/alldata');
-        setAllData(response.data);
+        setAllData(response.data.filter(patient => patient.valid === 0)); // Filter patients with valid === 0
       } catch (error) {
         console.error('Error fetching all data:', error);
       }
@@ -17,14 +17,58 @@ function AllData() {
     fetchAllData();
   }, []);
 
+  // Function to handle validation of a patient
+  const handleValidation = async (id) => {
+    try {
+      await axios.put(`http://localhost:5000/validate/${id}`);
+      const response = await axios.get('http://localhost:5000/alldata');
+      setAllData(response.data.filter(patient => patient.valid === 0)); // Update data after validation and filter again
+      alert('Patient validated successfully!');
+    } catch (error) {
+      console.error('Error while validating patient:', error);
+    }
+  };
+
+  // Function to handle validation of all patients
+  const handleValidationAll = async () => {
+    try {
+      await axios.put(`http://localhost:5000/validate/all`);
+      const response = await axios.get('http://localhost:5000/alldata');
+      setAllData(response.data.filter(patient => patient.valid === 0)); // Update data after validation and filter again
+      alert('All patients validated successfully!');
+    } catch (error) {
+      console.error('Error while validating all patients:', error);
+    }
+  };
+
   return (
     <div>
       <h2>All Data:</h2>
-      <ul>
-        {allData.map((data, index) => (
-          <li key={index}>{data.content}</li>
-        ))}
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Prénom</th>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>CIN</th>
+            <th>Gender</th>
+          </tr>
+        </thead>
+        <tbody>
+          {allData.map((patient) => (
+            <tr key={patient._id}>
+              <td>{patient._id}</td>
+              <td>{patient.prenom}</td>
+              <td>{patient.nom}</td>
+              <td>{patient.Email}</td>
+              <td>{patient.CIN}</td>
+              <td>{patient.Gender}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button onClick={handleValidationAll}>Valider tous les patients</button>
     </div>
   );
 }
