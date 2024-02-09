@@ -1,7 +1,4 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-contract ValidatePatient{
+contract ValidatePatient {
     uint256 public patientCount = 0;
 
     mapping(uint256 => Patient) public patientsList;

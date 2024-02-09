@@ -1,55 +1,35 @@
-import React from 'react';
-import axios from 'axios';
-import Web3 from 'web3';
-
-function ValidateButton({ patients }) {
-  const handleValidationAll = async () => {
+const handleValidationAll = async () => {
     try {
-      // Set valid to 1 in MongoDB for all patients
-      await axios.put('http://localhost:5000/validate/all');
+      // Filter patients with valid === 0
+      const patientsToValidate = patients.filter(patient => patient.valid === 0);
       
-      // Connect to MetaMask's injected Web3 instance
-      if (window.ethereum) {
-        const web3 = new Web3(window.ethereum);
-        await window.ethereum.enable(); // Request account access from MetaMask
-        const accounts = await web3.eth.getAccounts();
-        
-        // Replace with your actual contract ABI and address
-        const contractABI = [ /* Your contract ABI here */ ];
-        const contractAddress = '0xD5c94505954A1F1828B7dC0205f7c56721A32fdb';
-        const contract = new web3.eth.Contract(contractABI, contractAddress);
-
-        // Iterate over the patients array and add each patient to the blockchain
-        patients.forEach(async (patient) => {
-          const { _id, prenom, nom } = patient;
-          await addPatientToBlockchain(contract, _id, prenom, nom, accounts[0]); // Pass the account address
-        });
-        
-        alert('All patients validated successfully and added to the blockchain!');
-      } else {
-        console.error('MetaMask not detected!');
-      }
+      // Load blockchain data to get contract instance and accounts
+      const { valid, accounts } = await loadBlockchainData();
+  
+      // Iterate over filtered patients and add each one to the blockchain
+      patientsToValidate.forEach(async (patient) => {
+        try {
+          await valid.methods
+            .addPatient(patient._id, patient.prenom, patient.nom)
+            .send({ from: accounts });
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+  
+      // Update the validity of all patients in the database
+      await axios.put(`http://localhost:5000/validate/all`);
+  
+      alert('All patients validated successfully!');
+      window.location.reload(); // Reload the page
     } catch (error) {
-      console.error('Error while validating all patients and adding to blockchain:', error);
+      console.error('Error while validating all patients:', error);
     }
   };
-
-  const addPatientToBlockchain = async (contract, id, firstName, lastName, account) => {
-    try {
-      const name = `${firstName} ${lastName}`;
-      // Call the addPatient function in the Auth smart contract
-      const response = await contract.methods.addPatient(id, name, 0, []).send({ from: account });
-      console.log(response);
-    } catch (error) {
-      console.error('Error while adding patient to blockchain:', error);
-    }
-  };
-
+  
   return (
     <div>
       <button onClick={handleValidationAll}>Valider tous les patients</button>
     </div>
   );
-}
-
-export default ValidateButton;
+  

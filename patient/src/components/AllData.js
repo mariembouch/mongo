@@ -19,17 +19,7 @@ function AllData() {
     fetchAllData();
   }, []);
 
-  // Function to handle validation of a patient
-  const handleValidation = async (id) => {
-    try {
-      await axios.put(`http://localhost:5000/validate/${id}`);
-      const response = await axios.get('http://localhost:5000/alldata');
-      setAllData(response.data.filter(patient => patient.valid === 0)); // Update data after validation and filter again
-      alert('Patient validated successfully!');
-    } catch (error) {
-      console.error('Error while validating patient:', error);
-    }
-  };
+
 
   // Function to handle validation of all patients
   const handleValidationAll = async () => {
@@ -70,7 +60,7 @@ function AllData() {
           ))}
         </tbody>
       </table>
-      <ValidateButton patients={allData} /> {/* Render the ValidateButton component */}
+      <ValidateButton patients={allData} />
     </div>
   );
 }
