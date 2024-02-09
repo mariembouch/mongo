@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import ValidateButton from './ValidateButton'; // Import the ValidateButton component
+
 function AllData() {
   const [allData, setAllData] = useState([]);
 
@@ -68,7 +70,7 @@ function AllData() {
           ))}
         </tbody>
       </table>
-      <button onClick={handleValidationAll}>Valider tous les patients</button>
+      <ValidateButton patients={allData} /> {/* Render the ValidateButton component */}
     </div>
   );
 }

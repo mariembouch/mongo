@@ -13,6 +13,20 @@ app.use(express.json({ extended: false }));
 const cors = require("cors");
 app.use(cors());
 
+
+// Route to update all patients' valid field to 1 in MongoDB
+app.put('/validate/all', async (req, res) => {
+  try {
+    // Update all patients' valid field to 1
+    await DataModel.updateMany({}, { valid: 1 });
+    res.status(200).json({ message: 'All patients validated successfully!' });
+  } catch (error) {
+    console.error('Error while validating all patients:', error);
+    res.status(500).json({ error: 'Server error while validating all patients' });
+  }
+});
+
+
 // Endpoint to fetch all data from the database
 app.get("/alldata", async (req, res) => {
   try {
