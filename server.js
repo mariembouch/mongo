@@ -28,14 +28,16 @@ app.get("/readfromserver", (req, res) => {
   res.json({ message: "Hey woman from server" });
 });
 
+
+
 app.post("/writetodatabase", async (req, res) => {
   try {
-    const { content } = req.body;
-    const newData = new DataModel({ content });
+    const { prenom, nom, Email, CIN, Gender ,valid} = req.body;
+    const newData = new DataModel({ prenom, nom, Email, CIN, Gender, valid});
     await newData.save();
-    res.json({ message: "Data saved successfully " });
+    res.json({ message: "Data saved successfully" });
   } catch (error) {
-    console.log("Server error while saving data", error.message);
+    console.log("Error while saving data:", error.message);
     res.status(500).send("Server error while saving data");
   }
 });
