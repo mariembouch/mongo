@@ -1,18 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { loadBlockchainData } from '../Web3'; // Assuming loadBlockchainData is exported from Web3.js
 
-function ValidateButton({ patients }) {
+function ValidateButton() {
+  const [patientsToValidate, setPatientsToValidate] = useState([]);
+
+  useEffect(() => {
+    const fetchNonValidatedPatients = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/alldata');
+        setPatientsToValidate(response.data);
+      } catch (error) {
+        console.error('Error fetching non-validated patients:', error);
+      }
+    };
+
+    fetchNonValidatedPatients();
+  }, []);
+
   const handleValidationAll = async () => {
     try {
-      const patientsToValidate = patients.filter(patient => patient.valid === 0);
       const { valid, accounts } = await loadBlockchainData();
 
       patientsToValidate.forEach(async (patient) => {
         try {
           await valid.methods
-            .addPatient(patient._id, patient.prenom, patient.nom)
-            .send({ from: accounts });
+            .addPatient(patient._id, patient.prenom, patient.nom, [], { from: accounts });
         } catch (error) {
           alert(error.message);
         }

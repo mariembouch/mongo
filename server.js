@@ -14,6 +14,10 @@ const cors = require("cors");
 app.use(cors());
 
 
+
+
+
+
 // Route to update all patients' valid field to 1 in MongoDB
 app.put('/validate/all', async (req, res) => {
   try {

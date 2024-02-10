@@ -21,17 +21,7 @@ function AllData() {
 
 
 
-  // Function to handle validation of all patients
-  const handleValidationAll = async () => {
-    try {
-      await axios.put(`http://localhost:5000/validate/all`);
-      const response = await axios.get('http://localhost:5000/alldata');
-      setAllData(response.data.filter(patient => patient.valid === 0)); // Update data after validation and filter again
-      alert('All patients validated successfully!');
-    } catch (error) {
-      console.error('Error while validating all patients:', error);
-    }
-  };
+
 
   return (
     <div>
